@@ -1,0 +1,224 @@
+@if (showActions || showColumnPicker || (selectable && selectedKeys.size > 0)) {
+  <div class="action-bar">
+    @if (selectable && selectedKeys.size > 0) {
+      <div class="selection-info">
+        <span class="text-muted">{{ selectedKeys.size }} selected</span>
+        <button class="btn btn-outline-primary btn-sm" (click)="toggleShowSelected()">
+          <i
+            class="bi"
+            [class.bi-funnel-fill]="showSelectedOnly"
+            [class.bi-funnel]="!showSelectedOnly"
+          ></i>
+          {{ showSelectedOnly ? 'Show all' : 'Show selected only' }}
+        </button>
+      </div>
+    }
+    @if (showActions || showColumnPicker) {
+      <div class="export-buttons">
+        @if (showColumnPicker) {
+          <div class="column-picker-wrapper" #pickerWrapper>
+            <button
+              class="btn btn-outline-secondary btn-sm"
+              (click)="toggleColumnPicker($event)"
+              title="Toggle columns"
+            >
+              <i class="bi bi-layout-three-columns me-1"></i> Columns
+            </button>
+            @if (columnPickerOpen) {
+              <div class="column-picker-dropdown">
+                @for (col of internalColumns; track col.key) {
+                  @if (!col.sticky) {
+                    <label class="column-picker-item">
+                      <input
+                        type="checkbox"
+                        class="form-check-input me-2"
+                        [checked]="visibleColumnKeys.has(col.key)"
+                        (change)="onToggleColumnVisibility(col.key)"
+                      />
+                      {{ col.header }}
+                    </label>
+                  }
+                }
+              </div>
+            }
+          </div>
+        }
+        @if (showActions) {
+          <button
+            class="btn btn-outline-secondary btn-sm"
+            title="Copy to clipboard"
+            (click)="onCopy()"
+          >
+            <i class="bi" [class.bi-check-lg]="copied" [class.bi-clipboard]="!copied"></i>
+            {{ copied ? 'Copied!' : 'Copy' }}
+          </button>
+          <button class="btn btn-outline-secondary btn-sm" (click)="onExportCsv()">CSV</button>
+          <button class="btn btn-outline-secondary btn-sm" (click)="onExportXlsx()">
+            XLSX
+          </button>
+          <button class="btn btn-outline-secondary btn-sm" (click)="onExportPdf()">PDF</button>
+          <button class="btn btn-outline-secondary btn-sm" title="Print" (click)="onPrint()">
+            <i class="bi bi-printer"></i> Print
+          </button>
+        }
+      </div>
+    }
+  </div>
+}
+
+<div class="table-scroll-wrapper">
+  <table
+    cdk-table
+    [dataSource]="pagedData"
+    class="table table-hover table-bordered align-middle mb-0"
+    [cdkDropListData]="internalColumns"
+    cdkDropList
+    cdkDropListOrientation="horizontal"
+    (cdkDropListDropped)="onColumnDrop($event)"
+  >
+    @if (selectable) {
+      <ng-container [cdkColumnDef]="selectCol">
+        <th
+          cdk-header-cell
+          *cdkHeaderCellDef
+          class="select-col"
+          [class.sticky-cell]="hasSticky"
+          [style.left]="hasSticky ? '0px' : null"
+          (click)="$event.stopPropagation()"
+        >
+          <input
+            type="checkbox"
+            class="form-check-input"
+            [checked]="isAllSelected"
+            [indeterminate]="isSomeSelected"
+            (change)="onToggleAll($event)"
+          />
+        </th>
+        <td
+          cdk-cell
+          *cdkCellDef="let row"
+          class="select-col"
+          [class.sticky-cell]="hasSticky"
+          [style.left]="hasSticky ? '0px' : null"
+          (click)="$event.stopPropagation()"
+        >
+          <input
+            type="checkbox"
+            class="form-check-input"
+            [checked]="isSelected(row)"
+            (change)="onToggleRow(row)"
+          />
+        </td>
+        <td
+          cdk-footer-cell
+          *cdkFooterCellDef
+          class="select-col"
+          [class.sticky-cell]="hasSticky"
+          [style.left]="hasSticky ? '0px' : null"
+        ></td>
+      </ng-container>
+    }
+
+    @for (col of internalColumns; track col.key) {
+      <ng-container [cdkColumnDef]="col.key">
+        <th
+          cdk-header-cell
+          *cdkHeaderCellDef
+          [style.width]="col.width"
+          [style.left]="getStickyLeft(col)"
+          [class.sticky-cell]="col.sticky"
+          [class.reorderable]="reorderableColumns && !col.sticky"
+          cdkDrag
+          [cdkDragDisabled]="!reorderableColumns || !!col.sticky"
+          (click)="onSort(col.key)"
+        >
+          @if (reorderableColumns && !col.sticky) {
+            <span cdkDragHandle class="me-1 text-muted" style="cursor:grab;font-size:0.8rem"
+              >⠿</span
+            >
+          }
+          {{ col.header }}
+          <span class="sort-icon" [class.active]="sortKey === col.key">
+            {{ sortKey === col.key && sortDir === 'desc' ? '▼' : '▲' }}
+          </span>
+        </th>
+        <td
+          cdk-cell
+          *cdkCellDef="let row"
+          [style.width]="col.width"
+          [style.left]="getStickyLeft(col)"
+          [class.sticky-cell]="col.sticky"
+        >
+          {{ formatValue(col, row[col.key], row) }}
+        </td>
+        <td
+          cdk-footer-cell
+          *cdkFooterCellDef
+          [style.width]="col.width"
+          [style.left]="getStickyLeft(col)"
+          [class.sticky-cell]="col.sticky"
+        >
+          {{ col.calculateTotal ? getColumnTotal(col) : '' }}
+        </td>
+      </ng-container>
+    }
+
+    <tr cdk-header-row *cdkHeaderRowDef="activeColumnKeys"></tr>
+    <tr
+      cdk-row
+      *cdkRowDef="let row; columns: activeColumnKeys"
+      style="cursor: pointer"
+      (click)="rowClick.emit(row)"
+    ></tr>
+    @if (hasTotals && sortedBase.length > 0) {
+      <tr cdk-footer-row *cdkFooterRowDef="activeColumnKeys"></tr>
+    }
+  </table>
+</div>
+
+@if (activeFilters.length > 0) {
+  <div class="filters-bar">
+    <span>Filters:</span>
+    @for (f of activeFilters; track $index) {
+      <span class="filter-chip">{{ f.label }}: {{ f.displayValue }}</span>
+    }
+  </div>
+}
+
+@if (pageSize) {
+  <div class="pagination-bar">
+    <span class="text-muted"
+      >Showing {{ pageStart }}–{{ pageEnd }} of {{ sortedBase.length }}</span
+    >
+    <div class="d-flex gap-1">
+      <button
+        class="btn btn-outline-secondary btn-sm"
+        [disabled]="currentPage === 1"
+        (click)="goToPage(1)"
+      >
+        <i class="bi bi-chevron-double-left"></i>
+      </button>
+      <button
+        class="btn btn-outline-secondary btn-sm"
+        [disabled]="currentPage === 1"
+        (click)="goToPage(currentPage - 1)"
+      >
+        <i class="bi bi-chevron-left"></i>
+      </button>
+      <button
+        class="btn btn-outline-secondary btn-sm"
+        [disabled]="currentPage === totalPages"
+        (click)="goToPage(currentPage + 1)"
+      >
+        <i class="bi bi-chevron-right"></i>
+      </button>
+      <button
+        class="btn btn-outline-secondary btn-sm"
+        [disabled]="currentPage === totalPages"
+        (click)="goToPage(totalPages)"
+      >
+        <i class="bi bi-chevron-double-right"></i>
+      </button>
+    </div>
+  </div>
+}

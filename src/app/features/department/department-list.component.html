@@ -1,0 +1,110 @@
+<div class="list-page" [class.list-page--selection]="mode === 'selection'">
+  <generic-header
+    [title]="mode === 'standalone' ? 'Departments' : 'Select Department'"
+    [subtitle]="mode === 'standalone' ? 'Search, edit and manage department records' : 'Pick a record to attach'"
+    [eyebrow]="mode === 'standalone' ? 'Records / Departments' : 'Selection mode'"
+  >
+    <button type="submit" form="departmentFilterForm" class="btn btn-primary btn-sm">
+      <i class="bi bi-search me-1"></i> Search
+    </button>
+    @if (mode === 'standalone' && can('create')) {
+      <button type="button" class="btn btn-primary btn-sm" (click)="onNew()">
+        <i class="bi bi-plus-lg me-1"></i> New
+      </button>
+    }
+    @if (mode === 'standalone' && can('edit')) {
+      <button
+        type="button"
+        class="btn btn-warning btn-sm"
+        [disabled]="selectedDepartments.length === 0"
+        (click)="onEditSelected()"
+      >
+        <i class="bi bi-pencil me-1"></i> Edit Selected
+      </button>
+    }
+    @if (mode === 'standalone' && can('delete')) {
+      <button
+        type="button"
+        class="btn btn-danger btn-sm"
+        [disabled]="selectedDepartments.length === 0"
+        (click)="onDeleteSelected()"
+      >
+        <i class="bi bi-trash me-1"></i> Delete Selected
+      </button>
+    }
+    <button
+      type="button"
+      class="btn btn-link btn-sm text-decoration-none"
+      (click)="onClearFilters()"
+    >
+      <i class="bi bi-x-circle me-1"></i> Clear
+    </button>
+    @if (mode === 'standalone') {
+      <button type="button" class="btn btn-outline-secondary btn-sm" (click)="activeFiltersService.open(filterForm, filterConfig, filterFormEl)">
+        <i class="bi bi-funnel me-1"></i> Active Filters
+      </button>
+    }
+  </generic-header>
+
+  <section class="block">
+    <header class="block__head">
+      <span class="block__label">Filter parameters</span>
+    </header>
+    <div class="block__body">
+      <form
+        id="departmentFilterForm"
+        [formGroup]="filterForm"
+        #filterFormEl
+        appFocusOnError
+        (ngSubmit)="onSearch()"
+      >
+        <div class="row g-2">
+          <div class="col-auto">
+            <code-form-control
+              fieldId="deptId"
+              formControlName="id"
+              label="ID"
+              [maskConfig]="{ maxLength: 4, padded: true }"
+            />
+          </div>
+          <div class="col">
+            <text-form-control fieldId="deptName" formControlName="name" label="Name" />
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section class="block">
+    <header class="block__head">
+      <span class="block__label">Results</span>
+      @if (selectedDepartments.length > 0) {
+        <span class="block__meta block__meta--accent">
+          {{ selectedDepartments.length }} selected
+        </span>
+      }
+    </header>
+
+    @if (loading) {
+      <list-state kind="loading" />
+    } @else if (data === null) {
+      <list-state kind="no-query" />
+    } @else if (data.length === 0) {
+      <list-state kind="empty" />
+    } @else {
+      <generic-table
+        [columns]="columns"
+        [data]="data"
+        (rowClick)="onRowClick($event)"
+        [pageSize]="10"
+        [showActions]="mode === 'standalone'"
+        [reorderableColumns]="mode === 'standalone'"
+        [selectable]="mode === 'standalone'"
+        [showColumnPicker]="mode === 'standalone'"
+        [filterForm]="filterForm"
+        [filterConfig]="filterConfig"
+        (selectionChange)="onSelectionChange($event)"
+      />
+    }
+  </section>
+</div>

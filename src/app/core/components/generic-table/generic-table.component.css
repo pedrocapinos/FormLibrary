@@ -1,0 +1,143 @@
+:host {
+  display: block;
+}
+.table-scroll-wrapper {
+  overflow-x: auto;
+  position: relative;
+}
+th {
+  user-select: none;
+  cursor: pointer;
+  white-space: nowrap;
+  position: relative;
+}
+th.reorderable {
+  cursor: grab;
+}
+th.reorderable:active {
+  cursor: grabbing;
+}
+.sort-icon {
+  font-size: 0.7rem;
+  opacity: 0.4;
+  margin-left: 4px;
+}
+.sort-icon.active {
+  opacity: 1;
+}
+.cdk-drag-preview th {
+  background: var(--ink-100);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  color: var(--ink-900);
+}
+.cdk-drag-placeholder {
+  opacity: 0.3;
+}
+.cdk-drag-animating {
+  transition: transform 200ms ease;
+}
+.select-col {
+  width: 40px;
+  text-align: center;
+}
+
+/* Sticky cells inherit row background so they follow theme + hover.
+   Hard background is only needed to occlude scrolled content. */
+.sticky-cell {
+  position: sticky;
+  z-index: 1;
+  background: var(--paper);
+}
+tbody tr:hover .sticky-cell {
+  background: var(--ink-50);
+}
+thead th.sticky-cell {
+  background: var(--ink-50);
+  z-index: 2;
+}
+tfoot td.sticky-cell,
+tr.footer-row .sticky-cell {
+  background: var(--ink-50);
+}
+
+.action-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--paper);
+}
+.action-bar .selection-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--ink-600);
+}
+.action-bar .export-buttons {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+.pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-top: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--ink-600);
+  background: var(--paper);
+}
+td[cdk-footer-cell] {
+  font-weight: 600;
+  background: var(--ink-50);
+  color: var(--ink-900);
+}
+.filters-bar {
+  font-size: 0.75rem;
+  color: var(--ink-600);
+  padding: 6px 12px;
+  background: var(--ink-50);
+  border: 1px solid var(--border);
+  border-top: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+}
+.filters-bar .filter-chip {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xs);
+  padding: 1px 8px;
+  white-space: nowrap;
+  color: var(--ink-800);
+}
+.column-picker-wrapper {
+  position: relative;
+  display: inline-block;
+}
+.column-picker-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 10;
+  background: var(--paper);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-xs);
+  padding: 8px 12px;
+  min-width: 180px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  color: var(--ink-900);
+}
+.column-picker-item {
+  display: flex;
+  align-items: center;
+  padding: 2px 0;
+  cursor: pointer;
+  white-space: nowrap;
+  font-size: 0.85rem;
+}

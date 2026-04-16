@@ -1,0 +1,66 @@
+<div class="list-page">
+  <generic-header
+    [title]="isNew ? 'New Department' : can('edit') ? 'Edit Department' : 'View Department'"
+    [eyebrow]="isNew ? 'Records / Departments / New' : 'Records / Departments / #' + (form.controls.id.value ?? '—')"
+  >
+    <batch-nav />
+    <button type="button" class="btn btn-outline-secondary btn-sm" (click)="onBack()">
+      <i class="bi bi-arrow-left me-1"></i> Back
+    </button>
+    @if (can('edit') || isNew) {
+      <button type="button" class="btn btn-link btn-sm text-decoration-none" (click)="onClear()">
+        <i class="bi bi-x-circle me-1"></i> Clear
+      </button>
+      <button type="submit" form="departmentForm" class="btn btn-primary btn-sm" [disabled]="saving">
+        <i class="bi bi-check-lg me-1"></i> {{ saving ? 'Saving…' : 'Save' }}
+      </button>
+    }
+    @if (!isNew && can('delete')) {
+      <button
+        type="button"
+        class="btn btn-danger btn-sm"
+        [disabled]="deleting"
+        (click)="onDelete()"
+      >
+        <i class="bi bi-trash me-1"></i> {{ deleting ? 'Deleting…' : 'Delete' }}
+      </button>
+    }
+  </generic-header>
+
+  @for (step of [batchOperationsService.currentIndex]; track step) {
+  <form
+    id="departmentForm"
+    [formGroup]="form"
+    appFocusOnError
+    (ngSubmit)="onSubmit()"
+    [class.batch-slide--next]="batchOperationsService.lastDirection === 'next'"
+    [class.batch-slide--prev]="batchOperationsService.lastDirection === 'prev'"
+  >
+    <section class="block">
+      <header class="block__head">
+        <span class="block__label">Department details</span>
+      </header>
+      <div class="block__body">
+        <div class="row g-2">
+          <div class="col-md-3">
+            <code-form-control
+              fieldId="deptEditId"
+              formControlName="id"
+              label="ID"
+              [maskConfig]="{ maxLength: 4, padded: true }"
+            />
+          </div>
+          <div class="col-md-9">
+            <text-form-control
+              fieldId="deptEditName"
+              formControlName="name"
+              label="Name"
+              [maxLength]="100"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+  </form>
+  }
+</div>

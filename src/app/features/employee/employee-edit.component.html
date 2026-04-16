@@ -1,0 +1,151 @@
+<div class="list-page">
+  <generic-header
+    [title]="isNew ? 'New Employee' : can('edit') ? 'Edit Employee' : 'View Employee'"
+    [eyebrow]="isNew ? 'Records / Employees / New' : 'Records / Employees / #' + (form.controls.identity.controls.id.value ?? '—')"
+  >
+    <batch-nav />
+    <button type="button" class="btn btn-outline-secondary btn-sm" (click)="onBack()">
+      <i class="bi bi-arrow-left me-1"></i> Back
+    </button>
+    @if (can('edit') || isNew) {
+      <button type="button" class="btn btn-link btn-sm text-decoration-none" (click)="onClear()">
+        <i class="bi bi-x-circle me-1"></i> Clear
+      </button>
+      <button type="submit" form="employeeForm" class="btn btn-primary btn-sm" [disabled]="saving">
+        <i class="bi bi-check-lg me-1"></i> {{ saving ? 'Saving…' : 'Save' }}
+      </button>
+    }
+    @if (!isNew && can('delete')) {
+      <button
+        type="button"
+        class="btn btn-danger btn-sm"
+        [disabled]="deleting"
+        (click)="onDelete()"
+      >
+        <i class="bi bi-trash me-1"></i> {{ deleting ? 'Deleting…' : 'Delete' }}
+      </button>
+    }
+  </generic-header>
+
+  @for (step of [batchOperationsService.currentIndex]; track step) {
+  <form
+    id="employeeForm"
+    [formGroup]="form"
+    appFocusOnError
+    (ngSubmit)="onSubmit()"
+    [class.batch-slide--next]="batchOperationsService.lastDirection === 'next'"
+    [class.batch-slide--prev]="batchOperationsService.lastDirection === 'prev'"
+  >
+    <section class="block">
+      <header class="block__head">
+        <span class="block__label">Identity</span>
+      </header>
+      <div class="block__body" formGroupName="identity">
+        <div class="row g-2">
+          <div class="col-md-4">
+            <code-form-control
+              fieldId="id"
+              formControlName="id"
+              label="ID"
+              [maskConfig]="{ maxLength: 4, padded: true }"
+              [customMessages]="idMessages"
+              [groupInvalid]="identityGroupInvalid"
+            />
+          </div>
+          <div class="col-md-8">
+            <cpf-form-control
+              fieldId="cpf"
+              formControlName="cpf"
+              label="CPF"
+              [groupInvalid]="identityGroupInvalid"
+            />
+          </div>
+        </div>
+        <error-message [control]="form.controls.identity" label="identification field (ID or CPF)" />
+      </div>
+    </section>
+
+    <section class="block">
+      <header class="block__head">
+        <span class="block__label">Personal</span>
+      </header>
+      <div class="block__body">
+        <text-form-control
+          fieldId="firstName"
+          formControlName="firstName"
+          label="First Name"
+          [maxLength]="10"
+        />
+      </div>
+    </section>
+
+    <section class="block">
+      <header class="block__head">
+        <span class="block__label">Employment</span>
+      </header>
+      <div class="block__body">
+        <div class="row g-3 align-items-end">
+          <div class="col-md-6">
+            <currency-form-control fieldId="salary" formControlName="salary" label="Salary" />
+          </div>
+          <div class="col-md-6">
+            <checkbox-form-control fieldId="isActive" formControlName="isActive" label="Active" />
+          </div>
+        </div>
+        <lookup-form-control
+          fieldId="department"
+          formControlName="department"
+          label="Department"
+          [lookupFn]="departmentLookupFn"
+          [lookupByIdFn]="departmentLookupByIdFn"
+          placeholder="No department selected"
+        />
+      </div>
+    </section>
+
+    <section class="block" formGroupName="address">
+      <header class="block__head">
+        <span class="block__label">Address</span>
+      </header>
+      <div class="block__body">
+        <address-form-control class="d-block" />
+      </div>
+    </section>
+
+    <section class="block">
+      <header class="block__head">
+        <span class="block__label">Phone Numbers</span>
+      </header>
+      <div class="block__body">
+        <dynamic-rows
+          [formArray]="form.controls.phones"
+          [createRow]="createPhoneRow"
+          [canAdd]="can('edit') || isNew"
+          [canRemove]="can('edit') || isNew"
+          addLabel="Add Phone"
+          emptyMessage="No phone numbers added yet."
+        >
+          <ng-template let-group let-index="index">
+            <div [formGroup]="group" class="row g-2">
+              <div class="col-md-4">
+                <text-form-control
+                  [fieldId]="'phones.' + index + '.label'"
+                  formControlName="label"
+                  label="Label"
+                />
+              </div>
+              <div class="col-md-8">
+                <phone-form-control
+                  [fieldId]="'phones.' + index + '.number'"
+                  formControlName="number"
+                  label="Number"
+                />
+              </div>
+            </div>
+          </ng-template>
+        </dynamic-rows>
+      </div>
+    </section>
+  </form>
+  }
+</div>

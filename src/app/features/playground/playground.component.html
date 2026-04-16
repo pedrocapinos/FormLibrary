@@ -1,0 +1,774 @@
+<div class="list-page" id="playground-container">
+  <generic-header
+    title="Component Playground"
+    subtitle="Interactive form control explorer"
+    eyebrow="Dev / Playground"
+  >
+    <button type="button" class="btn btn-outline-secondary btn-sm" (click)="onActiveFilters()">
+      <i class="bi bi-funnel me-1"></i> Active Filters
+    </button>
+    <button type="button" class="btn btn-link btn-sm text-decoration-none" (click)="onClear()">
+      <i class="bi bi-x-circle me-1"></i> Clear
+    </button>
+    <button type="submit" form="playgroundForm" class="btn btn-primary btn-sm">
+      <i class="bi bi-check-lg me-1"></i> Submit
+    </button>
+  </generic-header>
+
+  <!-- Tabs -->
+  <ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+      <button
+        class="nav-link"
+        [class.active]="activeTab === 'text'"
+        (click)="activeTab = 'text'"
+        aria-controls="tab-panel-text"
+      >
+        <i class="bi bi-fonts me-1"></i> Text & Masked
+      </button>
+    </li>
+    <li class="nav-item">
+      <button
+        class="nav-link"
+        [class.active]="activeTab === 'numeric'"
+        (click)="activeTab = 'numeric'"
+        aria-controls="tab-panel-numeric"
+      >
+        <i class="bi bi-123 me-1"></i> Numeric
+      </button>
+    </li>
+    <li class="nav-item">
+      <button
+        class="nav-link"
+        [class.active]="activeTab === 'selection'"
+        (click)="activeTab = 'selection'"
+        aria-controls="tab-panel-selection"
+      >
+        <i class="bi bi-ui-checks me-1"></i> Selection
+      </button>
+    </li>
+    <li class="nav-item">
+      <button
+        class="nav-link"
+        [class.active]="activeTab === 'compound'"
+        (click)="activeTab = 'compound'"
+        aria-controls="tab-panel-compound"
+      >
+        <i class="bi bi-layout-three-columns me-1"></i> Compound
+      </button>
+    </li>
+  </ul>
+
+  <form id="playgroundForm" [formGroup]="form" appFocusOnError (ngSubmit)="onSubmit()">
+    <div class="row">
+
+      <!-- ==================== LEFT: FORM CONTROLS ==================== -->
+      <div class="col-lg-8">
+
+        <!-- ==================== TEXT & MASKED TAB ==================== -->
+        <div id="tab-panel-text" role="tabpanel" [class.d-none]="activeTab !== 'text'">
+          <div class="row g-4">
+
+            <!-- Text -->
+            <div class="col-12">
+              <section class="block">
+                <header class="block__head">
+                  <span class="block__label">text-form-control</span>
+                </header>
+                <div class="block__body">
+                  <div class="row">
+                    <div class="col-md-7">
+                      <text-form-control
+                        fieldId="text"
+                        formControlName="text"
+                        label="Sample Text"
+                        [required]="textConfig.required"
+                        [maxLength]="textConfig.maxLength ?? undefined"
+                      />
+                    </div>
+                    <div class="col-md-5">
+                      <div class="bg-light rounded p-3 mt-3">
+                        <h6 class="text-muted small mb-2">Configuration</h6>
+                        <div class="form-check form-switch mb-2">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="textDisabled"
+                            [(ngModel)]="textConfig.disabled"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="onToggleDisabled('text', $event)"
+                          />
+                          <label class="form-check-label small" for="textDisabled">Disabled</label>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="textRequired"
+                            [(ngModel)]="textConfig.required"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="onToggleRequired('text', $event)"
+                          />
+                          <label class="form-check-label small" for="textRequired">Required</label>
+                        </div>
+                        <div class="mb-0">
+                          <label class="form-label small mb-1" for="textMaxLength">Max Length</label>
+                          <input
+                            type="number"
+                            class="form-control form-control-sm"
+                            id="textMaxLength"
+                            [(ngModel)]="textConfig.maxLength"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="onTextMaxLengthChange()"
+                            min="1"
+                            placeholder="None"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <!-- CPF -->
+            <div class="col-12">
+              <section class="block">
+                <header class="block__head">
+                  <span class="block__label">cpf-form-control</span>
+                </header>
+                <div class="block__body">
+                  <div class="row">
+                    <div class="col-md-7">
+                      <cpf-form-control
+                        fieldId="cpf"
+                        formControlName="cpf"
+                        label="CPF"
+                        [required]="cpfConfig.required"
+                      />
+                    </div>
+                    <div class="col-md-5">
+                      <div class="bg-light rounded p-3 mt-3">
+                        <h6 class="text-muted small mb-2">Configuration</h6>
+                        <div class="form-check form-switch mb-2">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="cpfDisabled"
+                            [(ngModel)]="cpfConfig.disabled"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="onToggleDisabled('cpf', $event)"
+                          />
+                          <label class="form-check-label small" for="cpfDisabled">Disabled</label>
+                        </div>
+                        <div class="form-check form-switch">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="cpfRequired"
+                            [(ngModel)]="cpfConfig.required"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="onToggleRequired('cpf', $event)"
+                          />
+                          <label class="form-check-label small" for="cpfRequired">Required</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-2">
+                    <small class="text-muted">Mask: <code>XXX.XXX.XXX-XX</code> &mdash; Model stores unmasked 11 digits</small>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <!-- CNPJ -->
+            <div class="col-12">
+              <section class="block">
+                <header class="block__head">
+                  <span class="block__label">cnpj-form-control</span>
+                </header>
+                <div class="block__body">
+                  <div class="row">
+                    <div class="col-md-7">
+                      <cnpj-form-control
+                        fieldId="cnpj"
+                        formControlName="cnpj"
+                        label="CNPJ"
+                        [required]="cnpjConfig.required"
+                      />
+                    </div>
+                    <div class="col-md-5">
+                      <div class="bg-light rounded p-3 mt-3">
+                        <h6 class="text-muted small mb-2">Configuration</h6>
+                        <div class="form-check form-switch mb-2">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="cnpjDisabled"
+                            [(ngModel)]="cnpjConfig.disabled"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="onToggleDisabled('cnpj', $event)"
+                          />
+                          <label class="form-check-label small" for="cnpjDisabled">Disabled</label>
+                        </div>
+                        <div class="form-check form-switch">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="cnpjRequired"
+                            [(ngModel)]="cnpjConfig.required"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="onToggleRequired('cnpj', $event)"
+                          />
+                          <label class="form-check-label small" for="cnpjRequired">Required</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-2">
+                    <small class="text-muted">Mask: <code>AA.AAA.AAA/AAAA-DD</code> &mdash; Alphanumeric with auto-uppercase</small>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <!-- Phone -->
+            <div class="col-12">
+              <section class="block">
+                <header class="block__head">
+                  <span class="block__label">phone-form-control</span>
+                </header>
+                <div class="block__body">
+                  <div class="row">
+                    <div class="col-md-7">
+                      <phone-form-control
+                        fieldId="phone"
+                        formControlName="phone"
+                        label="Phone"
+                        [required]="phoneConfig.required"
+                      />
+                    </div>
+                    <div class="col-md-5">
+                      <div class="bg-light rounded p-3 mt-3">
+                        <h6 class="text-muted small mb-2">Configuration</h6>
+                        <div class="form-check form-switch mb-2">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="phoneDisabled"
+                            [(ngModel)]="phoneConfig.disabled"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="onToggleDisabled('phone', $event)"
+                          />
+                          <label class="form-check-label small" for="phoneDisabled">Disabled</label>
+                        </div>
+                        <div class="form-check form-switch">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="phoneRequired"
+                            [(ngModel)]="phoneConfig.required"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="onToggleRequired('phone', $event)"
+                          />
+                          <label class="form-check-label small" for="phoneRequired">Required</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-2">
+                    <small class="text-muted">Mask: <code>DDD-DDDDD-DDDD</code> &mdash; inputmode: tel</small>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <!-- Date -->
+            <div class="col-12">
+              <section class="block">
+                <header class="block__head">
+                  <span class="block__label">date-form-control</span>
+                </header>
+                <div class="block__body">
+                  <div class="row">
+                    <div class="col-md-7">
+                      <date-form-control
+                        fieldId="date"
+                        formControlName="date"
+                        label="Date"
+                        [required]="dateConfig.required"
+                      />
+                    </div>
+                    <div class="col-md-5">
+                      <div class="bg-light rounded p-3 mt-3">
+                        <h6 class="text-muted small mb-2">Configuration</h6>
+                        <div class="form-check form-switch mb-2">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="dateDisabled"
+                            [(ngModel)]="dateConfig.disabled"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="onToggleDisabled('date', $event)"
+                          />
+                          <label class="form-check-label small" for="dateDisabled">Disabled</label>
+                        </div>
+                        <div class="form-check form-switch">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="dateRequired"
+                            [(ngModel)]="dateConfig.required"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="onToggleRequired('date', $event)"
+                          />
+                          <label class="form-check-label small" for="dateRequired">Required</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-2">
+                    <small class="text-muted">Display: <code>dd/MM/yyyy</code> &mdash; Model stores ISO <code>yyyy-MM-dd</code></small>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ==================== NUMERIC TAB ==================== -->
+        <div id="tab-panel-numeric" role="tabpanel" [class.d-none]="activeTab !== 'numeric'">
+          <div class="row g-4">
+
+            <!-- Code -->
+            <div class="col-12">
+              <section class="block">
+                <header class="block__head">
+                  <span class="block__label">code-form-control</span>
+                </header>
+                <div class="block__body">
+                  <div class="row">
+                    <div class="col-md-7">
+                      @if (codeKey) {
+                        <code-form-control
+                          fieldId="code"
+                          formControlName="code"
+                          label="Code"
+                          [required]="codeConfig.required"
+                          [maskConfig]="codeMaskConfig"
+                        />
+                      }
+                    </div>
+                    <div class="col-md-5">
+                      <div class="bg-light rounded p-3 mt-3">
+                        <h6 class="text-muted small mb-2">Configuration</h6>
+                        <div class="form-check form-switch mb-2">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="codeDisabled"
+                            [(ngModel)]="codeConfig.disabled"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="onToggleDisabled('code', $event)"
+                          />
+                          <label class="form-check-label small" for="codeDisabled">Disabled</label>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="codeRequired"
+                            [(ngModel)]="codeConfig.required"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="onToggleRequired('code', $event)"
+                          />
+                          <label class="form-check-label small" for="codeRequired">Required</label>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="codePadded"
+                            [(ngModel)]="codeConfig.padded"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="onCodePaddedChange()"
+                          />
+                          <label class="form-check-label small" for="codePadded">Padded</label>
+                        </div>
+                        <div class="mb-0">
+                          <label class="form-label small mb-1" for="codeMaxLength">Max Length</label>
+                          <input
+                            type="number"
+                            class="form-control form-control-sm"
+                            id="codeMaxLength"
+                            [(ngModel)]="codeConfig.maxLength"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="onCodeMaxLengthChange()"
+                            min="1"
+                            max="10"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-2">
+                    <small class="text-muted">
+                      Leading-zeros mask &mdash;
+                      Padded: <code>0042</code> &rarr; <code>42</code>,
+                      Non-padded: <code>42</code> &rarr; <code>42</code>
+                    </small>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <!-- Currency -->
+            <div class="col-12">
+              <section class="block">
+                <header class="block__head">
+                  <span class="block__label">currency-form-control</span>
+                </header>
+                <div class="block__body">
+                  <div class="row">
+                    <div class="col-md-7">
+                      @if (currencyKey) {
+                        <currency-form-control
+                          fieldId="currency"
+                          formControlName="currency"
+                          label="Currency"
+                          [required]="currencyConfig.required"
+                          [fractionDigits]="currencyConfig.fractionDigits"
+                          [min]="currencyConfig.min ?? undefined"
+                          [max]="currencyConfig.max ?? undefined"
+                        />
+                      }
+                    </div>
+                    <div class="col-md-5">
+                      <div class="bg-light rounded p-3 mt-3">
+                        <h6 class="text-muted small mb-2">Configuration</h6>
+                        <div class="form-check form-switch mb-2">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="currencyDisabled"
+                            [(ngModel)]="currencyConfig.disabled"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="onToggleDisabled('currency', $event)"
+                          />
+                          <label class="form-check-label small" for="currencyDisabled">Disabled</label>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="currencyRequired"
+                            [(ngModel)]="currencyConfig.required"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="onToggleRequired('currency', $event)"
+                          />
+                          <label class="form-check-label small" for="currencyRequired">Required</label>
+                        </div>
+                        <div class="mb-2">
+                          <label class="form-label small mb-1" for="currencyFraction">Fraction Digits</label>
+                          <input
+                            type="number"
+                            class="form-control form-control-sm"
+                            id="currencyFraction"
+                            [(ngModel)]="currencyConfig.fractionDigits"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="onCurrencyFractionChange()"
+                            min="0"
+                            max="15"
+                          />
+                        </div>
+                        @if (currencyConfigKey) {
+                          <div class="mb-2">
+                            <label class="form-label small mb-1" for="currencyConfigMin">Min</label>
+                            <input
+                              type="text"
+                              class="form-control form-control-sm"
+                              id="currencyConfigMin"
+                              [maskito]="currencyConfigMask"
+                              [value]="formatCurrency(currencyConfig.min, currencyConfig.fractionDigits, currencyConfigMask)"
+                              (blur)="onCurrencyConfigBlur('min', $event)"
+                            />
+                          </div>
+                          <div class="mb-2">
+                            <label class="form-label small mb-1" for="currencyConfigMax">Max</label>
+                            <input
+                              type="text"
+                              class="form-control form-control-sm"
+                              id="currencyConfigMax"
+                              [maskito]="currencyConfigMask"
+                              [value]="formatCurrency(currencyConfig.max, currencyConfig.fractionDigits, currencyConfigMask)"
+                              (blur)="onCurrencyConfigBlur('max', $event)"
+                            />
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-2">
+                    <small class="text-muted">Brazilian locale &mdash; <code>1.234,56</code> &rarr; model: <code>1234.56</code></small>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ==================== SELECTION TAB ==================== -->
+        <div id="tab-panel-selection" role="tabpanel" [class.d-none]="activeTab !== 'selection'">
+          <div class="row g-4">
+
+            <!-- Select -->
+            <div class="col-12">
+              <section class="block">
+                <header class="block__head">
+                  <span class="block__label">select-form-control</span>
+                </header>
+                <div class="block__body">
+                  <div class="row">
+                    <div class="col-md-7">
+                      <select-form-control
+                        fieldId="select"
+                        formControlName="select"
+                        label="Framework"
+                        [required]="selectConfig.required"
+                        [options]="selectOptions"
+                        [placeholder]="selectConfig.placeholder"
+                      />
+                    </div>
+                    <div class="col-md-5">
+                      <div class="bg-light rounded p-3 mt-3">
+                        <h6 class="text-muted small mb-2">Configuration</h6>
+                        <div class="form-check form-switch mb-2">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="selectDisabled"
+                            [(ngModel)]="selectConfig.disabled"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="onToggleDisabled('select', $event)"
+                          />
+                          <label class="form-check-label small" for="selectDisabled">Disabled</label>
+                        </div>
+                        <div class="form-check form-switch mb-2">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="selectRequired"
+                            [(ngModel)]="selectConfig.required"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="onToggleRequired('select', $event)"
+                          />
+                          <label class="form-check-label small" for="selectRequired">Required</label>
+                        </div>
+                        <div class="mb-0">
+                          <label class="form-label small mb-1" for="selectPlaceholder">Placeholder</label>
+                          <input
+                            type="text"
+                            class="form-control form-control-sm"
+                            id="selectPlaceholder"
+                            [(ngModel)]="selectConfig.placeholder"
+                            [ngModelOptions]="{ standalone: true }"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-2">
+                    <small class="text-muted">
+                      Options: {{ selectOptions.length }} items &mdash; Stores <code>option.value</code> in model
+                    </small>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <!-- Checkbox -->
+            <div class="col-12">
+              <section class="block">
+                <header class="block__head">
+                  <span class="block__label">checkbox-form-control</span>
+                </header>
+                <div class="block__body">
+                  <div class="row">
+                    <div class="col-md-7">
+                      <checkbox-form-control
+                        fieldId="checkbox"
+                        formControlName="checkbox"
+                        label="Accept Terms"
+                      />
+                    </div>
+                    <div class="col-md-5">
+                      <div class="bg-light rounded p-3 mt-3">
+                        <h6 class="text-muted small mb-2">Configuration</h6>
+                        <div class="form-check form-switch">
+                          <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="checkboxDisabled"
+                            [(ngModel)]="checkboxConfig.disabled"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="onToggleDisabled('checkbox', $event)"
+                          />
+                          <label class="form-check-label small" for="checkboxDisabled">Disabled</label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-2">
+                    <small class="text-muted">
+                      Supports custom <code>trueValue</code>/<code>falseValue</code> and <code>filterHideFalsy</code>
+                    </small>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ==================== COMPOUND TAB ==================== -->
+        <div id="tab-panel-compound" role="tabpanel" [class.d-none]="activeTab !== 'compound'">
+          <div class="row g-4">
+
+            <!-- Range Currency -->
+            <div class="col-12">
+              <section class="block">
+                <header class="block__head">
+                  <span class="block__label">range-currency-form-control</span>
+                </header>
+                <div class="block__body" formGroupName="range">
+                  <div class="row">
+                    <div class="col-md-8">
+                      @if (rangeKey) {
+                        <range-currency-form-control
+                          startControlName="rangeMin"
+                          endControlName="rangeMax"
+                          [startLabel]="rangeConfig.startLabel"
+                          [endLabel]="rangeConfig.endLabel"
+                          startFieldId="rangeMin"
+                          endFieldId="rangeMax"
+                          [fractionDigits]="rangeConfig.fractionDigits"
+                          [min]="rangeConfig.min ?? undefined"
+                          [max]="rangeConfig.max ?? undefined"
+                        />
+                      }
+                    </div>
+                    <div class="col-md-4">
+                      <div class="bg-light rounded p-3 mt-3">
+                        <h6 class="text-muted small mb-2">Configuration</h6>
+                        <div class="mb-2">
+                          <label class="form-label small mb-1" for="rangeStartLabel">Start Label</label>
+                          <input
+                            type="text"
+                            class="form-control form-control-sm"
+                            id="rangeStartLabel"
+                            [(ngModel)]="rangeConfig.startLabel"
+                            [ngModelOptions]="{ standalone: true }"
+                          />
+                        </div>
+                        <div class="mb-2">
+                          <label class="form-label small mb-1" for="rangeEndLabel">End Label</label>
+                          <input
+                            type="text"
+                            class="form-control form-control-sm"
+                            id="rangeEndLabel"
+                            [(ngModel)]="rangeConfig.endLabel"
+                            [ngModelOptions]="{ standalone: true }"
+                          />
+                        </div>
+                        <div class="mb-2">
+                          <label class="form-label small mb-1" for="rangeFraction">Fraction Digits</label>
+                          <input
+                            type="number"
+                            class="form-control form-control-sm"
+                            id="rangeFraction"
+                            [(ngModel)]="rangeConfig.fractionDigits"
+                            [ngModelOptions]="{ standalone: true }"
+                            (ngModelChange)="onRangeFractionChange()"
+                            min="0"
+                            max="15"
+                          />
+                        </div>
+                        @if (rangeConfigKey) {
+                          <div class="mb-2">
+                            <label class="form-label small mb-1" for="rangeConfigMin">Min</label>
+                            <input
+                              type="text"
+                              class="form-control form-control-sm"
+                              id="rangeConfigMin"
+                              [maskito]="rangeConfigMask"
+                              [value]="formatCurrency(rangeConfig.min, rangeConfig.fractionDigits, rangeConfigMask)"
+                              (blur)="onRangeConfigBlur('min', $event)"
+                            />
+                          </div>
+                          <div class="mb-2">
+                            <label class="form-label small mb-1" for="rangeConfigMax">Max</label>
+                            <input
+                              type="text"
+                              class="form-control form-control-sm"
+                              id="rangeConfigMax"
+                              [maskito]="rangeConfigMask"
+                              [value]="formatCurrency(rangeConfig.max, rangeConfig.fractionDigits, rangeConfigMask)"
+                              (blur)="onRangeConfigBlur('max', $event)"
+                            />
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                  <div class="mt-2">
+                    <small class="text-muted">
+                      Cross-field validation: start must be &le; end &mdash; Uses <code>ControlContainer</code> injection
+                    </small>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <!-- Address -->
+            <div class="col-12">
+              <section class="block">
+                <header class="block__head">
+                  <span class="block__label">address-form-control</span>
+                </header>
+                <div class="block__body" formGroupName="address">
+                  <address-form-control class="d-block" />
+                  <div class="mt-2">
+                    <small class="text-muted">
+                      Group component with <code>atLeastOneRequired</code> cross-field validator &mdash;
+                      Uses <code>ControlContainer</code> to bind to parent form controls
+                    </small>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ==================== RIGHT: FORM VALUE ==================== -->
+      <div class="col-lg-4">
+        <section class="block" style="position: sticky; top: 1rem">
+          <header class="block__head">
+            <span class="block__label">Form Value</span>
+            <span class="badge ms-auto" [class.bg-success]="form.valid" [class.bg-danger]="form.invalid">
+              {{ form.valid ? 'Valid' : 'Invalid' }}
+            </span>
+          </header>
+          <pre class="mb-0 p-3" style="max-height: 80vh; overflow: auto; font-size: 0.8rem">{{ form.getRawValue() | json }}</pre>
+        </section>
+      </div>
+
+    </div>
+  </form>
+
+</div>

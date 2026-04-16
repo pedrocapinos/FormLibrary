@@ -1,0 +1,131 @@
+<div class="list-page" [class.list-page--selection]="mode === 'selection'">
+  <generic-header
+    [title]="mode === 'standalone' ? 'Employees' : 'Select Employee'"
+    [subtitle]="mode === 'standalone' ? 'Search, edit and manage employee records' : 'Pick a record to attach'"
+    [eyebrow]="mode === 'standalone' ? 'Records / Employees' : 'Selection mode'"
+  >
+    <button type="submit" form="employeeFilterForm" class="btn btn-primary btn-sm">
+      <i class="bi bi-search me-1"></i> Search
+    </button>
+    @if (mode === 'standalone' && can('create')) {
+      <button type="button" class="btn btn-primary btn-sm" (click)="onNew()">
+        <i class="bi bi-plus-lg me-1"></i> New
+      </button>
+    }
+    @if (mode === 'standalone' && can('edit')) {
+      <button
+        type="button"
+        class="btn btn-warning btn-sm"
+        [disabled]="selectedEmployees.length === 0"
+        (click)="onEditSelected()"
+      >
+        <i class="bi bi-pencil me-1"></i> Edit
+      </button>
+    }
+    @if (mode === 'standalone' && can('delete')) {
+      <button
+        type="button"
+        class="btn btn-danger btn-sm"
+        [disabled]="selectedEmployees.length === 0"
+        (click)="onDeleteSelected()"
+      >
+        <i class="bi bi-trash me-1"></i> Delete
+      </button>
+    }
+    <button
+      type="button"
+      class="btn btn-link btn-sm text-decoration-none"
+      (click)="onClearFilters()"
+    >
+      <i class="bi bi-x-circle me-1"></i> Clear
+    </button>
+    @if (mode === 'standalone') {
+      <button type="button" class="btn btn-outline-secondary btn-sm" (click)="activeFiltersService.open(filterForm, filterConfig, filterFormEl)">
+        <i class="bi bi-funnel me-1"></i> Filters
+      </button>
+    }
+  </generic-header>
+
+  <section class="block">
+    <header class="block__head">
+      <span class="block__label">Filter parameters</span>
+    </header>
+    <div class="block__body">
+      <form
+        id="employeeFilterForm"
+        [formGroup]="filterForm"
+        #filterFormEl
+        appFocusOnError
+        (ngSubmit)="onSearch()"
+      >
+        <div class="row g-2">
+          <div class="col-auto">
+            <code-form-control
+              fieldId="id"
+              formControlName="id"
+              label="ID"
+              [maskConfig]="{ maxLength: 4, padded: true }"
+            />
+          </div>
+          <div class="col">
+            <text-form-control fieldId="firstName" formControlName="firstName" label="First Name" />
+          </div>
+        </div>
+        <div class="row g-2 mt-2">
+          <div class="col">
+            <checkbox-form-control
+              fieldId="isActive"
+              formControlName="isActive"
+              label="Active only"
+              [options]="{ trueValue: true, falseValue: null }"
+            />
+          </div>
+        </div>
+        <div class="row mt-2">
+          <div class="col">
+            <range-currency-form-control
+              startControlName="salaryMin"
+              endControlName="salaryMax"
+              startFieldId="salaryMin"
+              endFieldId="salaryMax"
+              startLabel="Min Salary"
+              endLabel="Max Salary"
+            />
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <section class="block">
+    <header class="block__head">
+      <span class="block__label">Results</span>
+      @if (selectedEmployees.length > 0) {
+        <span class="block__meta block__meta--accent">
+          {{ selectedEmployees.length }} selected
+        </span>
+      }
+    </header>
+
+    @if (loading) {
+      <list-state kind="loading" />
+    } @else if (data === null) {
+      <list-state kind="no-query" />
+    } @else if (data.length === 0) {
+      <list-state kind="empty" />
+    } @else {
+      <generic-table
+        [columns]="columns"
+        [data]="data"
+        (rowClick)="onRowClick($event)"
+        [pageSize]="10"
+        [reorderableColumns]="mode === 'standalone'"
+        [selectable]="mode === 'standalone'"
+        [showColumnPicker]="mode === 'standalone'"
+        [filterForm]="filterForm"
+        [filterConfig]="filterConfig"
+        (selectionChange)="onSelectionChange($event)"
+      />
+    }
+  </section>
+</div>
