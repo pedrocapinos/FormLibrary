@@ -1,8 +1,0 @@
-# Ignore artifacts:
-dist/
-node_modules/
-.angular/
-coverage/
-
-# Ignore specific files:
-package-lock.json
