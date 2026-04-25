@@ -1,1 +1,0 @@
-import{a}from"./chunk-4UQB5MG6.js";import"./chunk-OUZSAVMN.js";import"./chunk-7F35UQFW.js";import"./chunk-OX7HLCS5.js";import"./chunk-R4BBIRFM.js";import"./chunk-ZD6Z2DNO.js";import"./chunk-3SOJ35SW.js";import"./chunk-U3U2RITW.js";import"./chunk-FASLPFYG.js";import"./chunk-745PYWTI.js";import"./chunk-4QFBUSA5.js";import"./chunk-5FZOKLP6.js";export{a as DepartmentListComponent};
